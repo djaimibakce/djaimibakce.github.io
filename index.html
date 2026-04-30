@@ -5,7 +5,7 @@
 <title>Dr. Djaimi Bakce</title>
 
 <style>
-body { font-family:'Segoe UI'; margin:0; background:#f4f6f9; }
+body { font-family:Segoe UI; margin:0; background:#f4f6f9; }
 
 header {
   background:#1f2d3d;
@@ -28,16 +28,33 @@ header img {
   padding:25px;
 }
 
-h2 { border-bottom:2px solid #ddd; }
-
-.item {
-  margin-bottom:12px;
-  padding-bottom:10px;
-  border-bottom:1px solid #eee;
+input, select {
+  width:100%;
+  padding:8px;
+  margin-bottom:8px;
 }
 
-.category {
-  margin-top:25px;
+button {
+  padding:6px 10px;
+  margin:3px;
+  background:#007BFF;
+  color:white;
+  border:none;
+  border-radius:4px;
+  cursor:pointer;
+}
+
+.item {
+  margin-bottom:10px;
+  border-bottom:1px solid #eee;
+  padding-bottom:8px;
+}
+
+.admin-box {
+  display:none;
+  background:#eef;
+  padding:15px;
+  margin-bottom:20px;
 }
 </style>
 
@@ -50,26 +67,74 @@ h2 { border-bottom:2px solid #ddd; }
 <div>
 <h1>Dr. Djaimi Bakce</h1>
 <p>Associate Professor of Agricultural Economics</p>
-<a href="cv.pdf" style="color:white;">📄 Download CV</a>
+<a href="cv.pdf" style="color:white;">📄 CV</a>
 </div>
 </header>
 
 <div class="container">
 
+<button onclick="toggleAdmin()">🔒 Admin Mode</button>
+
+<div class="admin-box" id="adminBox">
+
+<h3>Add Publication</h3>
+
+<input id="title" placeholder="Title">
+<input id="authors" placeholder="Authors">
+<input id="year" placeholder="Year">
+<input id="journal" placeholder="Journal">
+<input id="link" placeholder="Link">
+
+<select id="category">
+<option>Journal Articles</option>
+<option>Proceedings</option>
+<option>Conference Papers</option>
+<option>Books</option>
+<option>Teaching Materials</option>
+<option>Media Publications</option>
+<option>Photos & Videos</option>
+<option>Others</option>
+</select>
+
+<button onclick="save()">Save</button>
+
+</div>
+
 <h2>Publications</h2>
-<div id="content">Loading...</div>
+<div id="content"></div>
 
 </div>
 
 <script>
 
-fetch("data.json")
-.then(res => res.json())
-.then(data => {
+let admin=false;
+let data = JSON.parse(localStorage.getItem("data")||"[]");
+
+function toggleAdmin(){
+  admin=!admin;
+  document.getElementById("adminBox").style.display = admin?"block":"none";
+}
+
+function save(){
+  let item = {
+    title:title.value,
+    authors:authors.value,
+    year:parseInt(year.value)||0,
+    journal:journal.value,
+    link:link.value,
+    category:category.value
+  };
+
+  data.push(item);
+  localStorage.setItem("data", JSON.stringify(data));
+  render();
+}
+
+function render(){
 
   data.sort((a,b)=>b.year-a.year);
 
-  let groups = {};
+  let groups={};
 
   data.forEach(d=>{
     if(!groups[d.category]) groups[d.category]=[];
@@ -79,28 +144,23 @@ fetch("data.json")
   let html="";
 
   for(let cat in groups){
-    html += `<div class="category"><h3>${cat}</h3>`;
+    html+=`<h3>${cat}</h3>`;
 
     groups[cat].forEach(d=>{
-      html += `
+      html+=`
       <div class="item">
         <b>${d.title}</b><br>
         ${d.authors} (${d.year})<br>
         <i>${d.journal}</i><br>
         <a href="${d.link}" target="_blank">View</a>
-      </div>
-      `;
+      </div>`;
     });
-
-    html += "</div>";
   }
 
-  document.getElementById("content").innerHTML = html;
+  content.innerHTML = html || "No data";
+}
 
-})
-.catch(()=>{
-  document.getElementById("content").innerHTML = "No data yet";
-});
+render();
 
 </script>
 
