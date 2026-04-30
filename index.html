@@ -34,8 +34,9 @@ h2 {
 
 input {
     width:100%;
-    padding:8px;
+    padding:10px;
     margin-bottom:10px;
+    border:1px solid #ccc;
 }
 
 .pub-item {
@@ -79,7 +80,6 @@ input {
 
 <h2>Publications</h2>
 
-<!-- FORM -->
 <h3>Add / Edit Publication</h3>
 
 <input id="title" placeholder="Title (Wajib)">
@@ -133,6 +133,11 @@ function render(){
     container.innerHTML = "";
 
     let data = JSON.parse(localStorage.getItem("pubs") || "[]");
+
+    if(data.length === 0){
+        container.innerHTML = "<i>Belum ada publikasi</i>";
+        return;
+    }
 
     data.forEach((pub, index) => {
         let div = document.createElement("div");
@@ -193,7 +198,9 @@ function downloadData(){
     a.click();
 }
 
-render();
+window.onload = function(){
+    render();
+};
 
 </script>
 
