@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Dr. Djaimi Bakce</title>
+
+<style>
+body { 
+    font-family:'Segoe UI', Arial; 
+    margin:0; 
+    background:#f4f6f9; 
+}
+
+header {
+    background:#1f2d3d;
+    color:white;
+    padding:30px;
+    display:flex;
+    align-items:center;
+}
+
+header img {
+    width:130px;
+    border-radius:50%;
+    margin-right:20px;
+}
+
+nav {
+    background:#34495e;
+    padding:10px;
+    text-align:center;
+}
+
+nav a {
+    color:white;
+    margin:10px;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+.container {
+    max-width:1100px;
+    margin:auto;
+    background:white;
+    padding:30px;
+    line-height:1.6;
+}
+
+h2 {
+    border-bottom:2px solid #ddd;
+    padding-bottom:5px;
+}
+
+.btn {
+    background:#007BFF;
+    color:white;
+    padding:10px 15px;
+    border-radius:6px;
+    text-decoration:none;
+    display:inline-block;
+    margin-top:10px;
+}
+
+.admin {
+    position:fixed;
+    bottom:20px;
+    right:20px;
+}
+
+[contenteditable="true"] {
+    outline:2px dashed red;
+}
+</style>
+
+</head>
+
+<body>
+
+<header>
+<img src="foto.png">
+<div>
+<h1>Dr. Djaimi Bakce, S.P., M.Si.</h1>
+<p>Associate Professor of Agricultural Economics</p>
+<p>Universitas Riau, Indonesia</p>
+
+<p>
+<a href="mailto:djaimi.bakce@lecturer.unri.ac.id" style="color:white;">📧 Email</a> |
+<a href="https://orcid.org/0000-0002-8294-9521" target="_blank" style="color:white;">🔗 ORCID</a> |
+<a href="https://www.scopus.com/authid/detail.uri?authorId=57190253431" target="_blank" style="color:white;">📊 Scopus</a> |
+<a href="https://scholar.google.com/citations?user=BKfQLdwAAAAJ" target="_blank" style="color:white;">🎓 Google Scholar</a> |
+<a href="https://www.webofscience.com/wos/author/record/PGT-2070-2026" target="_blank" style="color:white;">📚 WoS</a> |
+<a href="https://garuda.kemdikbud.go.id/author/view/240178" target="_blank" style="color:white;">🇮🇩 Garuda</a>
+</p>
+
+<a href="cv.pdf" class="btn">📄 Download CV</a>
+
+</div>
+</header>
+
+<nav>
+<a href="#profile">Profile</a>
+<a href="#academic">Academic</a>
+<a href="#bahan">Bahan Ajar</a>
+<a href="#artikel">Artikel</a>
+<a href="#media">Media</a>
+</nav>
+
+<div class="container">
+
+<section id="profile" contenteditable="false">
+<h2>Professional Profile</h2>
+<p>
+Associate Professor with over 25 years of experience in agricultural economics, agribusiness,
+rural development, sustainability, and policy. Active in Scopus-indexed publications and peer review.
+</p>
+</section>
+
+<section id="academic" contenteditable="false">
+<h2>Academic Profiles</h2>
+<ul>
+<li><a href="https://orcid.org/0000-0002-8294-9521" target="_blank">ORCID</a></li>
+<li><a href="https://www.scopus.com/authid/detail.uri?authorId=57190253431" target="_blank">Scopus</a></li>
+<li><a href="https://scholar.google.com/citations?user=BKfQLdwAAAAJ" target="_blank">Google Scholar</a></li>
+<li><a href="https://www.webofscience.com/wos/author/record/PGT-2070-2026" target="_blank">Web of Science</a></li>
+<li><a href="https://garuda.kemdikbud.go.id/author/view/240178" target="_blank">Garuda</a></li>
+</ul>
+</section>
+
+<section id="bahan" contenteditable="false">
+<h2>📚 Bahan Ajar</h2>
+<ul>
+<li><a href="#">Materi Ekonometrika</a></li>
+</ul>
+</section>
+
+<section id="artikel" contenteditable="false">
+<h2>🧪 Artikel Ilmiah</h2>
+<ul>
+<li>Peatland Policy and Sustainable Development</li>
+<li>Clove Supply & Demand Analysis</li>
+</ul>
+</section>
+
+<section id="media" contenteditable="false">
+<h2>📰 Publikasi Media</h2>
+<ul>
+<li>Artikel media</li>
+</ul>
+</section>
+
+</div>
+
+<div class="admin">
+<button class="btn" onclick="toggleEdit()">✏️ Edit</button>
+</div>
+
+<script>
+let editMode = false;
+
+function toggleEdit() {
+    editMode = !editMode;
+    document.querySelectorAll("section").forEach(sec => {
+        sec.contentEditable = editMode;
+    });
+    alert(editMode ? "Edit Mode ON" : "Edit Mode OFF");
+}
+</script>
+
+</body>
+</html>
