@@ -1,12 +1,140 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Test Website</title>
+<title>Dr. Djaimi Bakce</title>
+
+<style>
+body { font-family:'Segoe UI'; margin:0; background:#f4f6f9; }
+
+header {
+    background:#1f2d3d;
+    color:white;
+    padding:30px;
+    display:flex;
+    align-items:center;
+}
+
+header img {
+    width:130px;
+    border-radius:50%;
+    margin-right:20px;
+}
+
+.container {
+    max-width:1100px;
+    margin:auto;
+    background:white;
+    padding:30px;
+}
+
+h2 {
+    border-bottom:2px solid #ddd;
+    padding-bottom:5px;
+}
+
+.pub-item {
+    margin-bottom:15px;
+}
+
+.pub-title {
+    font-weight:bold;
+}
+
+.pub-title a {
+    text-decoration:none;
+    color:#1a0dab;
+}
+
+.pub-meta {
+    color:#555;
+    font-size:14px;
+}
+
+.btn {
+    background:#007BFF;
+    color:white;
+    padding:10px;
+    border-radius:5px;
+    margin:5px;
+    cursor:pointer;
+}
+
+.admin {
+    position:fixed;
+    bottom:20px;
+    right:20px;
+}
+</style>
+
 </head>
+
 <body>
 
-<h1>Website Berhasil</h1>
-<p>Kalau ini muncul berarti sudah benar.</p>
+<header>
+<img src="foto.png">
+<div>
+<h1>Dr. Djaimi Bakce</h1>
+<p>Associate Professor of Agricultural Economics</p>
+</div>
+</header>
+
+<div class="container">
+
+<h2>Publications</h2>
+<div id="pub-list"></div>
+
+</div>
+
+<div class="admin">
+<button class="btn" onclick="addPublication()">➕ Add Publication</button>
+</div>
+
+<script>
+
+function addPublication(){
+    let title = prompt("Title:");
+    let authors = prompt("Authors:");
+    let year = prompt("Year:");
+    let journal = prompt("Journal:");
+    let link = prompt("Link (DOI / PDF):");
+
+    if(title){
+        let data = JSON.parse(localStorage.getItem("pubs") || "[]");
+
+        data.push({title, authors, year, journal, link});
+        localStorage.setItem("pubs", JSON.stringify(data));
+
+        render();
+    }
+}
+
+function render(){
+    let container = document.getElementById("pub-list");
+    container.innerHTML = "";
+
+    let data = JSON.parse(localStorage.getItem("pubs") || "[]");
+
+    data.forEach(pub => {
+        let div = document.createElement("div");
+        div.className = "pub-item";
+
+        div.innerHTML = `
+            <div class="pub-title">
+                <a href="${pub.link}" target="_blank">${pub.title}</a>
+            </div>
+            <div class="pub-meta">
+                ${pub.authors} (${pub.year})<br>
+                <i>${pub.journal}</i>
+            </div>
+        `;
+
+        container.appendChild(div);
+    });
+}
+
+render();
+
+</script>
 
 </body>
 </html>
