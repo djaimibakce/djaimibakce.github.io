@@ -3,8 +3,14 @@
 <head>
 <title>Dr. Djaimi Bakce</title>
 
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
 <style>
-body { font-family:'Segoe UI'; margin:0; background:#f4f6f9; }
+body {
+    font-family: 'Segoe UI', Arial;
+    margin:0;
+    background:#f4f6f9;
+}
 
 header {
     background:#1f2d3d;
@@ -15,16 +21,16 @@ header {
 }
 
 header img {
-    width:130px;
+    width:120px;
     border-radius:50%;
     margin-right:20px;
 }
 
 .container {
-    max-width:1100px;
+    max-width:1000px;
     margin:auto;
     background:white;
-    padding:30px;
+    padding:25px;
 }
 
 h2 {
@@ -36,7 +42,21 @@ input, select {
     width:100%;
     padding:10px;
     margin-bottom:10px;
+    border:1px solid #ccc;
 }
+
+.btn {
+    background:#007BFF;
+    color:white;
+    padding:8px 12px;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+    margin:3px;
+}
+
+.btn-danger { background:#dc3545; }
+.btn-secondary { background:#6c757d; }
 
 .pub-item {
     margin-bottom:15px;
@@ -47,26 +67,19 @@ input, select {
 .badge {
     background:#007BFF;
     color:white;
-    padding:3px 8px;
-    border-radius:5px;
+    padding:2px 6px;
+    border-radius:4px;
     font-size:12px;
 }
 
-.btn {
-    background:#007BFF;
-    color:white;
-    padding:8px 12px;
-    border-radius:5px;
-    margin:3px;
-    cursor:pointer;
-    border:none;
+.stats {
+    background:#eef3f8;
+    padding:10px;
+    margin-bottom:15px;
 }
 
-.btn-danger { background:#dc3545; }
-.btn-secondary { background:#6c757d; }
-
 .search {
-    margin-bottom:20px;
+    margin-bottom:15px;
 }
 </style>
 
@@ -86,15 +99,17 @@ input, select {
 
 <h2>Publications</h2>
 
-<input class="search" id="search" placeholder="🔍 Search publication..." onkeyup="render()">
+<div class="stats" id="stats"></div>
+
+<input id="search" class="search" placeholder="🔍 Search..." onkeyup="render()">
 
 <h3>Add / Edit Publication</h3>
 
-<input id="title" placeholder="Title (Wajib)">
+<input id="title" placeholder="Title (wajib)">
 <input id="authors" placeholder="Authors">
 <input id="year" placeholder="Year">
 <input id="journal" placeholder="Journal">
-<input id="link" placeholder="Link (DOI / PDF)">
+<input id="link" placeholder="Link">
 
 <select id="category">
 <option>Scopus</option>
@@ -102,7 +117,7 @@ input, select {
 <option>Buku</option>
 </select>
 
-<input id="cite" placeholder="Citation (angka)">
+<input id="cite" placeholder="Citation">
 
 <button class="btn" onclick="savePublication()">💾 Save</button>
 <button class="btn btn-secondary" onclick="downloadData()">📄 Download</button>
@@ -131,7 +146,7 @@ function savePublication(){
         journal: document.getElementById("journal").value,
         link: document.getElementById("link").value || "#",
         category: document.getElementById("category").value,
-        cite: document.getElementById("cite").value || "0"
+        cite: parseInt(document.getElementById("cite").value) || 0
     };
 
     let data = JSON.parse(localStorage.getItem("pubs") || "[]");
@@ -149,7 +164,6 @@ function savePublication(){
     render();
 }
 
-<script>
 function render(){
     let container = document.getElementById("pub-list");
     container.innerHTML = "";
@@ -157,7 +171,9 @@ function render(){
     let keyword = document.getElementById("search").value.toLowerCase();
     let data = JSON.parse(localStorage.getItem("pubs") || "[]");
 
-    let filtered = data.map((item, index) => ({...item, realIndex:index}))
+    updateStats(data);
+
+    let filtered = data.map((item, i) => ({...item, idx:i}))
                        .filter(p => p.title.toLowerCase().includes(keyword));
 
     if(filtered.length === 0){
@@ -165,56 +181,61 @@ function render(){
         return;
     }
 
-    filtered.forEach((pub) => {
+    filtered.forEach(pub => {
         let div = document.createElement("div");
         div.className = "pub-item";
 
         div.innerHTML = `
             <b><a href="${pub.link}" target="_blank">${pub.title}</a></b>
             <span class="badge">${pub.category}</span><br>
-
             ${pub.authors} (${pub.year})<br>
             <i>${pub.journal}</i><br>
-
             📊 Citations: ${pub.cite}<br>
-
-            <button class="btn" onclick="editPub(${pub.realIndex})">✏️ Edit</button>
-            <button class="btn btn-danger" onclick="deletePub(${pub.realIndex})">🗑 Delete</button>
+            <button class="btn" onclick="editPub(${pub.idx})">✏️ Edit</button>
+            <button class="btn btn-danger" onclick="deletePub(${pub.idx})">🗑 Delete</button>
         `;
 
         container.appendChild(div);
     });
 }
-</script>
-function editPub(index){
-    let data = JSON.parse(localStorage.getItem("pubs") || "[]");
-    let pub = data[index];
 
-    document.getElementById("title").value = pub.title;
-    document.getElementById("authors").value = pub.authors;
-    document.getElementById("year").value = pub.year;
-    document.getElementById("journal").value = pub.journal;
-    document.getElementById("link").value = pub.link;
-    document.getElementById("category").value = pub.category;
-    document.getElementById("cite").value = pub.cite;
+function updateStats(data){
+    let total = data.length;
+    let cites = data.reduce((a,b)=>a+(b.cite||0),0);
 
-    editIndex = index;
+    document.getElementById("stats").innerHTML =
+        "📄 Total Publications: <b>"+total+"</b> | 📊 Citations: <b>"+cites+"</b>";
 }
 
-function deletePub(index){
+function editPub(i){
     let data = JSON.parse(localStorage.getItem("pubs") || "[]");
-    data.splice(index,1);
+    let p = data[i];
+
+    document.getElementById("title").value = p.title;
+    document.getElementById("authors").value = p.authors;
+    document.getElementById("year").value = p.year;
+    document.getElementById("journal").value = p.journal;
+    document.getElementById("link").value = p.link;
+    document.getElementById("category").value = p.category;
+    document.getElementById("cite").value = p.cite;
+
+    editIndex = i;
+}
+
+function deletePub(i){
+    let data = JSON.parse(localStorage.getItem("pubs") || "[]");
+    data.splice(i,1);
     localStorage.setItem("pubs", JSON.stringify(data));
     render();
 }
 
 function clearForm(){
-    document.querySelectorAll("input").forEach(i => i.value = "");
+    document.querySelectorAll("input").forEach(e=>e.value="");
 }
 
 function downloadData(){
     let data = localStorage.getItem("pubs");
-    let blob = new Blob([data], {type: "text/plain"});
+    let blob = new Blob([data], {type:"text/plain"});
     let a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = "publications.txt";
