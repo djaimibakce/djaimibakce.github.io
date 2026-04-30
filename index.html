@@ -1,4 +1,3 @@
-<!-- update -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -33,17 +32,24 @@ h2 {
     padding-bottom:5px;
 }
 
-input {
+input, select {
     width:100%;
     padding:10px;
     margin-bottom:10px;
-    border:1px solid #ccc;
 }
 
 .pub-item {
     margin-bottom:15px;
     padding-bottom:10px;
     border-bottom:1px solid #eee;
+}
+
+.badge {
+    background:#007BFF;
+    color:white;
+    padding:3px 8px;
+    border-radius:5px;
+    font-size:12px;
 }
 
 .btn {
@@ -56,12 +62,11 @@ input {
     border:none;
 }
 
-.btn-danger {
-    background:#dc3545;
-}
+.btn-danger { background:#dc3545; }
+.btn-secondary { background:#6c757d; }
 
-.btn-secondary {
-    background:#6c757d;
+.search {
+    margin-bottom:20px;
 }
 </style>
 
@@ -81,6 +86,8 @@ input {
 
 <h2>Publications</h2>
 
+<input class="search" id="search" placeholder="🔍 Search publication..." onkeyup="render()">
+
 <h3>Add / Edit Publication</h3>
 
 <input id="title" placeholder="Title (Wajib)">
@@ -88,6 +95,14 @@ input {
 <input id="year" placeholder="Year">
 <input id="journal" placeholder="Journal">
 <input id="link" placeholder="Link (DOI / PDF)">
+
+<select id="category">
+<option>Scopus</option>
+<option>Nasional</option>
+<option>Buku</option>
+</select>
+
+<input id="cite" placeholder="Citation (angka)">
 
 <button class="btn" onclick="savePublication()">💾 Save</button>
 <button class="btn btn-secondary" onclick="downloadData()">📄 Download</button>
@@ -109,17 +124,22 @@ function savePublication(){
         return;
     }
 
-    let authors = document.getElementById("authors").value;
-    let year = document.getElementById("year").value;
-    let journal = document.getElementById("journal").value;
-    let link = document.getElementById("link").value || "#";
+    let pub = {
+        title,
+        authors: document.getElementById("authors").value,
+        year: document.getElementById("year").value,
+        journal: document.getElementById("journal").value,
+        link: document.getElementById("link").value || "#",
+        category: document.getElementById("category").value,
+        cite: document.getElementById("cite").value || "0"
+    };
 
     let data = JSON.parse(localStorage.getItem("pubs") || "[]");
 
     if(editIndex === -1){
-        data.push({title, authors, year, journal, link});
+        data.push(pub);
     } else {
-        data[editIndex] = {title, authors, year, journal, link};
+        data[editIndex] = pub;
         editIndex = -1;
     }
 
@@ -133,21 +153,28 @@ function render(){
     let container = document.getElementById("pub-list");
     container.innerHTML = "";
 
+    let keyword = document.getElementById("search").value.toLowerCase();
     let data = JSON.parse(localStorage.getItem("pubs") || "[]");
 
-    if(data.length === 0){
-        container.innerHTML = "<i>Belum ada publikasi</i>";
+    let filtered = data.filter(p => p.title.toLowerCase().includes(keyword));
+
+    if(filtered.length === 0){
+        container.innerHTML = "<i>Tidak ada publikasi</i>";
         return;
     }
 
-    data.forEach((pub, index) => {
+    filtered.forEach((pub, index) => {
         let div = document.createElement("div");
         div.className = "pub-item";
 
         div.innerHTML = `
-            <b><a href="${pub.link}" target="_blank">${pub.title}</a></b><br>
+            <b><a href="${pub.link}" target="_blank">${pub.title}</a></b>
+            <span class="badge">${pub.category}</span><br>
+
             ${pub.authors} (${pub.year})<br>
             <i>${pub.journal}</i><br>
+
+            📊 Citations: ${pub.cite}<br>
 
             <button class="btn" onclick="editPub(${index})">✏️ Edit</button>
             <button class="btn btn-danger" onclick="deletePub(${index})">🗑 Delete</button>
@@ -166,6 +193,8 @@ function editPub(index){
     document.getElementById("year").value = pub.year;
     document.getElementById("journal").value = pub.journal;
     document.getElementById("link").value = pub.link;
+    document.getElementById("category").value = pub.category;
+    document.getElementById("cite").value = pub.cite;
 
     editIndex = index;
 }
@@ -178,20 +207,11 @@ function deletePub(index){
 }
 
 function clearForm(){
-    document.getElementById("title").value = "";
-    document.getElementById("authors").value = "";
-    document.getElementById("year").value = "";
-    document.getElementById("journal").value = "";
-    document.getElementById("link").value = "";
+    document.querySelectorAll("input").forEach(i => i.value = "");
 }
 
 function downloadData(){
     let data = localStorage.getItem("pubs");
-    if(!data){
-        alert("Belum ada data");
-        return;
-    }
-
     let blob = new Blob([data], {type: "text/plain"});
     let a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
@@ -199,9 +219,7 @@ function downloadData(){
     a.click();
 }
 
-window.onload = function(){
-    render();
-};
+window.onload = render;
 
 </script>
 
