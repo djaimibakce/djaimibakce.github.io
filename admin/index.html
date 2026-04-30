@@ -1,13 +1,78 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
-<title>Admin</title>
-
-<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-<script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
-
+<meta charset="UTF-8">
+<title>Admin - Publications</title>
+<style>
+body { font-family:Arial; padding:20px; }
+input, select { width:100%; padding:8px; margin-bottom:10px; }
+button { padding:8px 12px; margin:5px; }
+</style>
 </head>
+
 <body>
+
+<h2>Admin - Input Publications</h2>
+
+<input id="title" placeholder="Title">
+<input id="authors" placeholder="Authors">
+<input id="year" placeholder="Year">
+<input id="journal" placeholder="Journal">
+<input id="link" placeholder="Link">
+
+<select id="category">
+<option>Journal Articles</option>
+<option>Proceedings</option>
+<option>Conference Papers</option>
+<option>Books</option>
+<option>Teaching Materials</option>
+<option>Media Publications</option>
+<option>Photos & Videos</option>
+<option>Others</option>
+</select>
+
+<button onclick="save()">Save</button>
+<button onclick="download()">Download JSON</button>
+
+<hr>
+
+<div id="list"></div>
+
+<script>
+
+let data = [];
+
+function save(){
+  let item = {
+    title: title.value,
+    authors: authors.value,
+    year: parseInt(year.value)||0,
+    journal: journal.value,
+    link: link.value,
+    category: category.value
+  };
+
+  data.push(item);
+  render();
+}
+
+function render(){
+  let html="";
+  data.forEach(d=>{
+    html += `<div><b>${d.title}</b> (${d.year})</div>`;
+  });
+  list.innerHTML = html;
+}
+
+function download(){
+  let blob = new Blob([JSON.stringify(data,null,2)], {type:"application/json"});
+  let a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "data.json";
+  a.click();
+}
+
+</script>
+
 </body>
 </html>
