@@ -3,10 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <title>Dr. Djaimi Bakce</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-body { font-family:'Segoe UI', Arial; margin:0; background:#f4f6f9; }
+body { font-family:'Segoe UI'; margin:0; background:#f4f6f9; }
 
 header {
   background:#1f2d3d;
@@ -17,7 +16,7 @@ header {
 }
 
 header img {
-  width:120px;
+  width:110px;
   border-radius:50%;
   margin-right:20px;
 }
@@ -29,49 +28,19 @@ header img {
   padding:25px;
 }
 
-h2 {
-  border-bottom:2px solid #ddd;
-  padding-bottom:5px;
-}
-
-.profile {
-  margin-bottom:20px;
-  line-height:1.6;
-}
-
-input, select {
-  width:100%;
-  padding:10px;
-  margin-bottom:10px;
-  border:1px solid #ccc;
-}
-
-button {
-  padding:8px 12px;
-  border:none;
-  border-radius:5px;
-  background:#007BFF;
-  color:white;
-  cursor:pointer;
-  margin:3px;
-}
-
-.btn-danger { background:#dc3545; }
+h2 { border-bottom:2px solid #ddd; }
 
 .item {
-  border-bottom:1px solid #eee;
   margin-bottom:12px;
   padding-bottom:10px;
+  border-bottom:1px solid #eee;
 }
 
-.badge {
-  background:#007BFF;
-  color:white;
-  padding:2px 6px;
-  border-radius:4px;
-  font-size:12px;
+.category {
+  margin-top:25px;
 }
 </style>
+
 </head>
 
 <body>
@@ -87,122 +56,51 @@ button {
 
 <div class="container">
 
-<h2>Professional Profile</h2>
-<div class="profile">
-Dr. Djaimi Bakce is an Associate Professor with extensive experience in agricultural economics,
-agribusiness development, rural policy, and sustainability. His work focuses on economic analysis,
-policy formulation, and strategic development in agricultural sectors.
-</div>
-
 <h2>Publications</h2>
-
-<!-- FORM -->
-<input id="title" placeholder="Title (required)">
-<input id="authors" placeholder="Authors">
-<input id="year" placeholder="Year">
-<input id="journal" placeholder="Journal / Publisher">
-<input id="link" placeholder="Link (DOI / PDF)">
-
-<select id="category">
-<option>Journal Articles</option>
-<option>Proceedings</option>
-<option>Conference Papers</option>
-<option>Books</option>
-<option>Teaching Materials</option>
-<option>Media Publications</option>
-<option>Photos & Videos</option>
-<option>Others</option>
-</select>
-
-<button onclick="save()">💾 Save</button>
-
-<hr>
-
-<div id="list"></div>
+<div id="content">Loading...</div>
 
 </div>
 
 <script>
 
-let editIndex = -1;
+fetch("data.json")
+.then(res => res.json())
+.then(data => {
 
-function save(){
-  let title = document.getElementById("title").value.trim();
-  if(!title){
-    alert("Title is required");
-    return;
-  }
+  data.sort((a,b)=>b.year-a.year);
 
-  let data = JSON.parse(localStorage.getItem("data") || "[]");
+  let groups = {};
 
-  let item = {
-    title: title,
-    authors: document.getElementById("authors").value,
-    year: document.getElementById("year").value,
-    journal: document.getElementById("journal").value,
-    link: document.getElementById("link").value,
-    category: document.getElementById("category").value
-  };
-
-  if(editIndex === -1){
-    data.push(item);
-  } else {
-    data[editIndex] = item;
-    editIndex = -1;
-  }
-
-  localStorage.setItem("data", JSON.stringify(data));
-
-  clearForm();
-  show();
-}
-
-function show(){
-  let data = JSON.parse(localStorage.getItem("data") || "[]");
-  let html = "";
-
-  data.forEach((d,i)=>{
-    html += `
-      <div class="item">
-        <b>${d.title}</b> <span class="badge">${d.category}</span><br>
-        ${d.authors} (${d.year})<br>
-        <i>${d.journal}</i><br>
-        <a href="${d.link}" target="_blank">${d.link}</a><br>
-        <button onclick="edit(${i})">Edit</button>
-        <button class="btn-danger" onclick="del(${i})">Delete</button>
-      </div>
-    `;
+  data.forEach(d=>{
+    if(!groups[d.category]) groups[d.category]=[];
+    groups[d.category].push(d);
   });
 
-  document.getElementById("list").innerHTML = html || "<i>No publications yet</i>";
-}
+  let html="";
 
-function edit(i){
-  let data = JSON.parse(localStorage.getItem("data") || "[]");
-  let d = data[i];
+  for(let cat in groups){
+    html += `<div class="category"><h3>${cat}</h3>`;
 
-  document.getElementById("title").value = d.title;
-  document.getElementById("authors").value = d.authors;
-  document.getElementById("year").value = d.year;
-  document.getElementById("journal").value = d.journal;
-  document.getElementById("link").value = d.link;
-  document.getElementById("category").value = d.category;
+    groups[cat].forEach(d=>{
+      html += `
+      <div class="item">
+        <b>${d.title}</b><br>
+        ${d.authors} (${d.year})<br>
+        <i>${d.journal}</i><br>
+        <a href="${d.link}" target="_blank">View</a>
+      </div>
+      `;
+    });
 
-  editIndex = i;
-}
+    html += "</div>";
+  }
 
-function del(i){
-  let data = JSON.parse(localStorage.getItem("data") || "[]");
-  data.splice(i,1);
-  localStorage.setItem("data", JSON.stringify(data));
-  show();
-}
+  document.getElementById("content").innerHTML = html;
 
-function clearForm(){
-  document.querySelectorAll("input").forEach(e => e.value = "");
-}
-
-window.onload = show;
+})
+.catch(()=>{
+  document.getElementById("content").innerHTML = "No data yet";
+});
 
 </script>
 
