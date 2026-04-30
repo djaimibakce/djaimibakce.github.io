@@ -4,7 +4,7 @@
 <title>Dr. Djaimi Bakce</title>
 
 <style>
-body { font-family:'Segoe UI', Arial; margin:0; background:#f4f6f9; }
+body { font-family:'Segoe UI'; margin:0; background:#f4f6f9; }
 
 header {
     background:#1f2d3d;
@@ -20,19 +20,6 @@ header img {
     margin-right:20px;
 }
 
-nav {
-    background:#34495e;
-    padding:10px;
-    text-align:center;
-}
-
-nav a {
-    color:white;
-    margin:10px;
-    text-decoration:none;
-    font-weight:bold;
-}
-
 .container {
     max-width:1100px;
     margin:auto;
@@ -40,14 +27,23 @@ nav a {
     padding:30px;
 }
 
-h2 { border-bottom:2px solid #ddd; }
-
 .btn {
     background:#007BFF;
     color:white;
-    padding:10px 15px;
-    border-radius:6px;
-    text-decoration:none;
+    padding:10px;
+    border-radius:5px;
+    margin:5px;
+    cursor:pointer;
+}
+
+.admin {
+    position:fixed;
+    bottom:20px;
+    right:20px;
+}
+
+[contenteditable="true"] {
+    outline:2px dashed red;
 }
 </style>
 
@@ -60,44 +56,55 @@ h2 { border-bottom:2px solid #ddd; }
 <div>
 <h1>Dr. Djaimi Bakce</h1>
 <p>Associate Professor of Agricultural Economics</p>
-
-<p>
-<a href="mailto:djaimi.bakce@lecturer.unri.ac.id" style="color:white;">Email</a> |
-<a href="https://orcid.org/0000-0002-8294-9521" target="_blank" style="color:white;">ORCID</a> |
-<a href="https://scholar.google.com/citations?user=BKfQLdwAAAAJ" target="_blank" style="color:white;">Scholar</a>
-</p>
-
-<a href="cv.pdf" class="btn">Download CV</a>
-
 </div>
 </header>
 
-<nav>
-<a href="#profile">Profile</a>
-<a href="#publications">Publications</a>
-<a href="#teaching">Teaching</a>
-</nav>
-
 <div class="container">
 
-<section id="profile">
-<h2>Profile</h2>
-<p>Academic profile description here.</p>
-</section>
-
-<section id="publications">
 <h2>Publications</h2>
-<ul id="pub-list">
-<li>Loading publications...</li>
-</ul>
-</section>
-
-<section id="teaching">
-<h2>Teaching Materials</h2>
-<p>Upload materials via admin panel.</p>
-</section>
+<ul id="pub-list"></ul>
 
 </div>
+
+<div class="admin">
+<button class="btn" onclick="toggleEdit()">✏️ Edit</button>
+<button class="btn" onclick="addPublication()">➕ Add</button>
+</div>
+
+<script>
+let editMode = false;
+
+function toggleEdit(){
+    editMode = !editMode;
+    document.body.contentEditable = editMode;
+    alert(editMode ? "Edit ON" : "Edit OFF");
+}
+
+function addPublication(){
+    let title = prompt("Enter publication title:");
+    if(title){
+        let list = document.getElementById("pub-list");
+        let li = document.createElement("li");
+        li.textContent = title;
+        list.appendChild(li);
+
+        saveData();
+    }
+}
+
+function saveData(){
+    localStorage.setItem("pubs", document.getElementById("pub-list").innerHTML);
+}
+
+function loadData(){
+    let data = localStorage.getItem("pubs");
+    if(data){
+        document.getElementById("pub-list").innerHTML = data;
+    }
+}
+
+loadData();
+</script>
 
 </body>
 </html>
