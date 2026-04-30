@@ -58,6 +58,7 @@ h2 {
     text-decoration:none;
     display:inline-block;
     margin-top:10px;
+    cursor:pointer;
 }
 
 .admin {
@@ -66,20 +67,44 @@ h2 {
     right:20px;
 }
 
+.lang {
+    position:absolute;
+    top:20px;
+    right:20px;
+}
+
 [contenteditable="true"] {
     outline:2px dashed red;
 }
 </style>
 
+<script>
+function setLang(lang){
+    document.querySelectorAll("[data-en]").forEach(el=>{
+        el.innerHTML = el.getAttribute("data-"+lang);
+    });
+}
+</script>
+
 </head>
 
 <body>
+
+<div class="lang">
+<button class="btn" onclick="setLang('en')">EN</button>
+<button class="btn" onclick="setLang('id')">ID</button>
+</div>
 
 <header>
 <img src="foto.png">
 <div>
 <h1>Dr. Djaimi Bakce, S.P., M.Si.</h1>
-<p>Associate Professor of Agricultural Economics</p>
+
+<p data-en="Associate Professor of Agricultural Economics"
+   data-id="Profesor Ekonomi Pertanian">
+Associate Professor of Agricultural Economics
+</p>
+
 <p>Universitas Riau, Indonesia</p>
 
 <p>
@@ -97,25 +122,25 @@ h2 {
 </header>
 
 <nav>
-<a href="#profile">Profile</a>
-<a href="#academic">Academic</a>
-<a href="#bahan">Bahan Ajar</a>
-<a href="#artikel">Artikel</a>
-<a href="#media">Media</a>
+<a href="#profile" data-en="Profile" data-id="Profil">Profile</a>
+<a href="#academic" data-en="Academic Profiles" data-id="Profil Akademik">Academic</a>
+<a href="#bahan" data-en="Teaching Materials" data-id="Bahan Ajar">Bahan Ajar</a>
+<a href="#artikel" data-en="Scientific Publications" data-id="Artikel Ilmiah">Artikel</a>
+<a href="#media" data-en="Media Publications" data-id="Publikasi Media">Media</a>
 </nav>
 
 <div class="container">
 
 <section id="profile" contenteditable="false">
-<h2>Professional Profile</h2>
-<p>
-Associate Professor with over 25 years of experience in agricultural economics, agribusiness,
-rural development, sustainability, and policy. Active in Scopus-indexed publications and peer review.
+<h2 data-en="Professional Profile" data-id="Profil Profesional">Professional Profile</h2>
+<p data-en="Associate Professor with over 25 years of experience in agricultural economics, agribusiness, rural development, sustainability, and policy. Active in Scopus-indexed publications and peer review."
+   data-id="Profesor dengan pengalaman lebih dari 25 tahun di bidang ekonomi pertanian, agribisnis, pembangunan pedesaan, dan kebijakan. Aktif dalam publikasi internasional dan review jurnal.">
+Associate Professor with over 25 years...
 </p>
 </section>
 
 <section id="academic" contenteditable="false">
-<h2>Academic Profiles</h2>
+<h2 data-en="Academic Profiles" data-id="Profil Akademik">Academic Profiles</h2>
 <ul>
 <li><a href="https://orcid.org/0000-0002-8294-9521" target="_blank">ORCID</a></li>
 <li><a href="https://www.scopus.com/authid/detail.uri?authorId=57190253431" target="_blank">Scopus</a></li>
@@ -126,14 +151,14 @@ rural development, sustainability, and policy. Active in Scopus-indexed publicat
 </section>
 
 <section id="bahan" contenteditable="false">
-<h2>📚 Bahan Ajar</h2>
+<h2 data-en="Teaching Materials" data-id="Bahan Ajar">Bahan Ajar</h2>
 <ul>
-<li><a href="#">Materi Ekonometrika</a></li>
+<li data-en="Econometrics Materials" data-id="Materi Ekonometrika">Materi Ekonometrika</li>
 </ul>
 </section>
 
 <section id="artikel" contenteditable="false">
-<h2>🧪 Artikel Ilmiah</h2>
+<h2 data-en="Scientific Publications" data-id="Artikel Ilmiah">Artikel Ilmiah</h2>
 <ul>
 <li>Peatland Policy and Sustainable Development</li>
 <li>Clove Supply & Demand Analysis</li>
@@ -141,9 +166,9 @@ rural development, sustainability, and policy. Active in Scopus-indexed publicat
 </section>
 
 <section id="media" contenteditable="false">
-<h2>📰 Publikasi Media</h2>
+<h2 data-en="Media Publications" data-id="Publikasi Media">Publikasi Media</h2>
 <ul>
-<li>Artikel media</li>
+<li data-en="Media Articles" data-id="Artikel Media">Artikel media</li>
 </ul>
 </section>
 
