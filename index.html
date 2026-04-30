@@ -6,35 +6,70 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-body { font-family: Arial; margin:0; background:#f4f6f9; }
+body { font-family:'Segoe UI', Arial; margin:0; background:#f4f6f9; }
 
 header {
-  background:#1f2d3d; color:white; padding:30px;
-  display:flex; align-items:center;
+  background:#1f2d3d;
+  color:white;
+  padding:30px;
+  display:flex;
+  align-items:center;
 }
-header img { width:110px; border-radius:50%; margin-right:20px; }
+
+header img {
+  width:120px;
+  border-radius:50%;
+  margin-right:20px;
+}
 
 .container {
-  max-width:900px; margin:auto; background:white; padding:25px;
+  max-width:1000px;
+  margin:auto;
+  background:white;
+  padding:25px;
 }
 
-h2 { border-bottom:2px solid #ddd; padding-bottom:5px; }
+h2 {
+  border-bottom:2px solid #ddd;
+  padding-bottom:5px;
+}
 
-input {
-  width:100%; padding:10px; margin-bottom:10px; border:1px solid #ccc;
+.profile {
+  margin-bottom:20px;
+  line-height:1.6;
+}
+
+input, select {
+  width:100%;
+  padding:10px;
+  margin-bottom:10px;
+  border:1px solid #ccc;
 }
 
 button {
-  padding:8px 12px; border:none; border-radius:5px;
-  background:#007BFF; color:white; cursor:pointer; margin:3px;
+  padding:8px 12px;
+  border:none;
+  border-radius:5px;
+  background:#007BFF;
+  color:white;
+  cursor:pointer;
+  margin:3px;
 }
 
 .btn-danger { background:#dc3545; }
 
 .item {
   border-bottom:1px solid #eee;
-  margin-bottom:10px;
+  margin-bottom:12px;
   padding-bottom:10px;
+}
+
+.badge {
+  background:#007BFF;
+  color:white;
+  padding:2px 6px;
+  border-radius:4px;
+  font-size:12px;
 }
 </style>
 </head>
@@ -46,20 +81,40 @@ button {
 <div>
 <h1>Dr. Djaimi Bakce</h1>
 <p>Associate Professor of Agricultural Economics</p>
+<a href="cv.pdf" style="color:white;">📄 Download CV</a>
 </div>
 </header>
 
 <div class="container">
 
+<h2>Professional Profile</h2>
+<div class="profile">
+Dr. Djaimi Bakce is an Associate Professor with extensive experience in agricultural economics,
+agribusiness development, rural policy, and sustainability. His work focuses on economic analysis,
+policy formulation, and strategic development in agricultural sectors.
+</div>
+
 <h2>Publications</h2>
 
-<input id="title" placeholder="Title (wajib)">
+<!-- FORM -->
+<input id="title" placeholder="Title (required)">
 <input id="authors" placeholder="Authors">
 <input id="year" placeholder="Year">
-<input id="journal" placeholder="Journal">
-<input id="link" placeholder="Link">
+<input id="journal" placeholder="Journal / Publisher">
+<input id="link" placeholder="Link (DOI / PDF)">
 
-<button onclick="save()">Save</button>
+<select id="category">
+<option>Journal Articles</option>
+<option>Proceedings</option>
+<option>Conference Papers</option>
+<option>Books</option>
+<option>Teaching Materials</option>
+<option>Media Publications</option>
+<option>Photos & Videos</option>
+<option>Others</option>
+</select>
+
+<button onclick="save()">💾 Save</button>
 
 <hr>
 
@@ -74,7 +129,7 @@ let editIndex = -1;
 function save(){
   let title = document.getElementById("title").value.trim();
   if(!title){
-    alert("Title wajib diisi");
+    alert("Title is required");
     return;
   }
 
@@ -85,7 +140,8 @@ function save(){
     authors: document.getElementById("authors").value,
     year: document.getElementById("year").value,
     journal: document.getElementById("journal").value,
-    link: document.getElementById("link").value
+    link: document.getElementById("link").value,
+    category: document.getElementById("category").value
   };
 
   if(editIndex === -1){
@@ -108,7 +164,7 @@ function show(){
   data.forEach((d,i)=>{
     html += `
       <div class="item">
-        <b>${d.title}</b><br>
+        <b>${d.title}</b> <span class="badge">${d.category}</span><br>
         ${d.authors} (${d.year})<br>
         <i>${d.journal}</i><br>
         <a href="${d.link}" target="_blank">${d.link}</a><br>
@@ -118,7 +174,7 @@ function show(){
     `;
   });
 
-  document.getElementById("list").innerHTML = html;
+  document.getElementById("list").innerHTML = html || "<i>No publications yet</i>";
 }
 
 function edit(i){
@@ -130,6 +186,7 @@ function edit(i){
   document.getElementById("year").value = d.year;
   document.getElementById("journal").value = d.journal;
   document.getElementById("link").value = d.link;
+  document.getElementById("category").value = d.category;
 
   editIndex = i;
 }
