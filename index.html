@@ -53,28 +53,16 @@ h2 {
 .btn {
     background:#007BFF;
     color:white;
-    padding:10px 15px;
+    padding:8px 12px;
     border-radius:6px;
-    text-decoration:none;
-    display:inline-block;
-    margin-top:10px;
     cursor:pointer;
-}
-
-.admin {
-    position:fixed;
-    bottom:20px;
-    right:20px;
+    margin-left:5px;
 }
 
 .lang {
     position:absolute;
     top:20px;
     right:20px;
-}
-
-[contenteditable="true"] {
-    outline:2px dashed red;
 }
 </style>
 
@@ -83,6 +71,10 @@ function setLang(lang){
     document.querySelectorAll("[data-en]").forEach(el=>{
         el.innerHTML = el.getAttribute("data-"+lang);
     });
+}
+
+window.onload = function(){
+    setLang('en'); // default English
 }
 </script>
 
@@ -109,15 +101,10 @@ Associate Professor of Agricultural Economics
 
 <p>
 <a href="mailto:djaimi.bakce@lecturer.unri.ac.id" style="color:white;">📧 Email</a> |
-<a href="https://orcid.org/0000-0002-8294-9521" target="_blank" style="color:white;">🔗 ORCID</a> |
-<a href="https://www.scopus.com/authid/detail.uri?authorId=57190253431" target="_blank" style="color:white;">📊 Scopus</a> |
-<a href="https://scholar.google.com/citations?user=BKfQLdwAAAAJ" target="_blank" style="color:white;">🎓 Google Scholar</a> |
-<a href="https://www.webofscience.com/wos/author/record/PGT-2070-2026" target="_blank" style="color:white;">📚 WoS</a> |
-<a href="https://garuda.kemdiktisaintek.go.id/author/view/240178" target="_blank" style="color:white;">🇮🇩 Garuda</a>
+<a href="https://orcid.org/0000-0002-8294-9521" target="_blank" style="color:white;">ORCID</a> |
+<a href="https://www.scopus.com/authid/detail.uri?authorId=57190253431" target="_blank" style="color:white;">Scopus</a> |
+<a href="https://scholar.google.com/citations?user=BKfQLdwAAAAJ" target="_blank" style="color:white;">Scholar</a>
 </p>
-
-<a href="cv.pdf" class="btn">📄 Download CV</a>
-
 </div>
 </header>
 
@@ -131,15 +118,15 @@ Associate Professor of Agricultural Economics
 
 <div class="container">
 
-<section id="profile" contenteditable="false">
+<section id="profile">
 <h2 data-en="Professional Profile" data-id="Profil Profesional">Professional Profile</h2>
 <p data-en="Associate Professor with over 25 years of experience in agricultural economics, agribusiness, rural development, sustainability, and policy. Active in Scopus-indexed publications and peer review."
    data-id="Profesor dengan pengalaman lebih dari 25 tahun di bidang ekonomi pertanian, agribisnis, pembangunan pedesaan, dan kebijakan. Aktif dalam publikasi internasional dan review jurnal.">
-Associate Professor with over 25 years...
+Associate Professor...
 </p>
 </section>
 
-<section id="academic" contenteditable="false">
+<section id="academic">
 <h2 data-en="Academic Profiles" data-id="Profil Akademik">Academic Profiles</h2>
 <ul>
 <li><a href="https://orcid.org/0000-0002-8294-9521" target="_blank">ORCID</a></li>
@@ -150,14 +137,14 @@ Associate Professor with over 25 years...
 </ul>
 </section>
 
-<section id="bahan" contenteditable="false">
+<section id="bahan">
 <h2 data-en="Teaching Materials" data-id="Bahan Ajar">Bahan Ajar</h2>
 <ul>
 <li data-en="Econometrics Materials" data-id="Materi Ekonometrika">Materi Ekonometrika</li>
 </ul>
 </section>
 
-<section id="artikel" contenteditable="false">
+<section id="artikel">
 <h2 data-en="Scientific Publications" data-id="Artikel Ilmiah">Artikel Ilmiah</h2>
 <ul>
 <li>Peatland Policy and Sustainable Development</li>
@@ -165,7 +152,7 @@ Associate Professor with over 25 years...
 </ul>
 </section>
 
-<section id="media" contenteditable="false">
+<section id="media">
 <h2 data-en="Media Publications" data-id="Publikasi Media">Publikasi Media</h2>
 <ul>
 <li data-en="Media Articles" data-id="Artikel Media">Artikel media</li>
@@ -173,22 +160,6 @@ Associate Professor with over 25 years...
 </section>
 
 </div>
-
-<div class="admin">
-<button class="btn" onclick="toggleEdit()">✏️ Edit</button>
-</div>
-
-<script>
-let editMode = false;
-
-function toggleEdit() {
-    editMode = !editMode;
-    document.querySelectorAll("section").forEach(sec => {
-        sec.contentEditable = editMode;
-    });
-    alert(editMode ? "Edit Mode ON" : "Edit Mode OFF");
-}
-</script>
 
 </body>
 </html>
