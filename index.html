@@ -149,6 +149,7 @@ function savePublication(){
     render();
 }
 
+<script>
 function render(){
     let container = document.getElementById("pub-list");
     container.innerHTML = "";
@@ -156,14 +157,15 @@ function render(){
     let keyword = document.getElementById("search").value.toLowerCase();
     let data = JSON.parse(localStorage.getItem("pubs") || "[]");
 
-    let filtered = data.filter(p => p.title.toLowerCase().includes(keyword));
+    let filtered = data.map((item, index) => ({...item, realIndex:index}))
+                       .filter(p => p.title.toLowerCase().includes(keyword));
 
     if(filtered.length === 0){
         container.innerHTML = "<i>Tidak ada publikasi</i>";
         return;
     }
 
-    filtered.forEach((pub, index) => {
+    filtered.forEach((pub) => {
         let div = document.createElement("div");
         div.className = "pub-item";
 
@@ -176,14 +178,14 @@ function render(){
 
             📊 Citations: ${pub.cite}<br>
 
-            <button class="btn" onclick="editPub(${index})">✏️ Edit</button>
-            <button class="btn btn-danger" onclick="deletePub(${index})">🗑 Delete</button>
+            <button class="btn" onclick="editPub(${pub.realIndex})">✏️ Edit</button>
+            <button class="btn btn-danger" onclick="deletePub(${pub.realIndex})">🗑 Delete</button>
         `;
 
         container.appendChild(div);
     });
 }
-
+</script>
 function editPub(index){
     let data = JSON.parse(localStorage.getItem("pubs") || "[]");
     let pub = data[index];
