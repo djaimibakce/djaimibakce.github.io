@@ -32,37 +32,34 @@ h2 {
     padding-bottom:5px;
 }
 
+input {
+    width:100%;
+    padding:8px;
+    margin-bottom:10px;
+}
+
 .pub-item {
     margin-bottom:15px;
-}
-
-.pub-title {
-    font-weight:bold;
-}
-
-.pub-title a {
-    text-decoration:none;
-    color:#1a0dab;
-}
-
-.pub-meta {
-    color:#555;
-    font-size:14px;
+    padding-bottom:10px;
+    border-bottom:1px solid #eee;
 }
 
 .btn {
     background:#007BFF;
     color:white;
-    padding:10px;
+    padding:8px 12px;
     border-radius:5px;
-    margin:5px;
+    margin:3px;
     cursor:pointer;
+    border:none;
 }
 
-.admin {
-    position:fixed;
-    bottom:20px;
-    right:20px;
+.btn-danger {
+    background:#dc3545;
+}
+
+.btn-secondary {
+    background:#6c757d;
 }
 </style>
 
@@ -81,31 +78,54 @@ h2 {
 <div class="container">
 
 <h2>Publications</h2>
+
+<!-- FORM -->
+<h3>Add / Edit Publication</h3>
+
+<input id="title" placeholder="Title (Wajib)">
+<input id="authors" placeholder="Authors">
+<input id="year" placeholder="Year">
+<input id="journal" placeholder="Journal">
+<input id="link" placeholder="Link (DOI / PDF)">
+
+<button class="btn" onclick="savePublication()">💾 Save</button>
+<button class="btn btn-secondary" onclick="downloadData()">📄 Download</button>
+
+<hr>
+
 <div id="pub-list"></div>
 
 </div>
 
-<div class="admin">
-<button class="btn" onclick="addPublication()">➕ Add Publication</button>
-</div>
-
 <script>
 
-function addPublication(){
-    let title = prompt("Title:");
-    let authors = prompt("Authors:");
-    let year = prompt("Year:");
-    let journal = prompt("Journal:");
-    let link = prompt("Link (DOI / PDF):");
+let editIndex = -1;
 
-    if(title){
-        let data = JSON.parse(localStorage.getItem("pubs") || "[]");
-
-        data.push({title, authors, year, journal, link});
-        localStorage.setItem("pubs", JSON.stringify(data));
-
-        render();
+function savePublication(){
+    let title = document.getElementById("title").value.trim();
+    if(!title){
+        alert("Title wajib diisi");
+        return;
     }
+
+    let authors = document.getElementById("authors").value;
+    let year = document.getElementById("year").value;
+    let journal = document.getElementById("journal").value;
+    let link = document.getElementById("link").value || "#";
+
+    let data = JSON.parse(localStorage.getItem("pubs") || "[]");
+
+    if(editIndex === -1){
+        data.push({title, authors, year, journal, link});
+    } else {
+        data[editIndex] = {title, authors, year, journal, link};
+        editIndex = -1;
+    }
+
+    localStorage.setItem("pubs", JSON.stringify(data));
+
+    clearForm();
+    render();
 }
 
 function render(){
@@ -114,22 +134,63 @@ function render(){
 
     let data = JSON.parse(localStorage.getItem("pubs") || "[]");
 
-    data.forEach(pub => {
+    data.forEach((pub, index) => {
         let div = document.createElement("div");
         div.className = "pub-item";
 
         div.innerHTML = `
-            <div class="pub-title">
-                <a href="${pub.link}" target="_blank">${pub.title}</a>
-            </div>
-            <div class="pub-meta">
-                ${pub.authors} (${pub.year})<br>
-                <i>${pub.journal}</i>
-            </div>
+            <b><a href="${pub.link}" target="_blank">${pub.title}</a></b><br>
+            ${pub.authors} (${pub.year})<br>
+            <i>${pub.journal}</i><br>
+
+            <button class="btn" onclick="editPub(${index})">✏️ Edit</button>
+            <button class="btn btn-danger" onclick="deletePub(${index})">🗑 Delete</button>
         `;
 
         container.appendChild(div);
     });
+}
+
+function editPub(index){
+    let data = JSON.parse(localStorage.getItem("pubs") || "[]");
+    let pub = data[index];
+
+    document.getElementById("title").value = pub.title;
+    document.getElementById("authors").value = pub.authors;
+    document.getElementById("year").value = pub.year;
+    document.getElementById("journal").value = pub.journal;
+    document.getElementById("link").value = pub.link;
+
+    editIndex = index;
+}
+
+function deletePub(index){
+    let data = JSON.parse(localStorage.getItem("pubs") || "[]");
+    data.splice(index,1);
+    localStorage.setItem("pubs", JSON.stringify(data));
+    render();
+}
+
+function clearForm(){
+    document.getElementById("title").value = "";
+    document.getElementById("authors").value = "";
+    document.getElementById("year").value = "";
+    document.getElementById("journal").value = "";
+    document.getElementById("link").value = "";
+}
+
+function downloadData(){
+    let data = localStorage.getItem("pubs");
+    if(!data){
+        alert("Belum ada data");
+        return;
+    }
+
+    let blob = new Blob([data], {type: "text/plain"});
+    let a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "publications.txt";
+    a.click();
 }
 
 render();
