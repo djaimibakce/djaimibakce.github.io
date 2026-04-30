@@ -1,88 +1,42 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
 <title>Dr. Djaimi Bakce</title>
-
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-body {
-    font-family: 'Segoe UI', Arial;
-    margin:0;
-    background:#f4f6f9;
-}
+body { font-family: Arial; margin:0; background:#f4f6f9; }
 
 header {
-    background:#1f2d3d;
-    color:white;
-    padding:30px;
-    display:flex;
-    align-items:center;
+  background:#1f2d3d; color:white; padding:30px;
+  display:flex; align-items:center;
 }
-
-header img {
-    width:120px;
-    border-radius:50%;
-    margin-right:20px;
-}
+header img { width:110px; border-radius:50%; margin-right:20px; }
 
 .container {
-    max-width:1000px;
-    margin:auto;
-    background:white;
-    padding:25px;
+  max-width:900px; margin:auto; background:white; padding:25px;
 }
 
-h2 {
-    border-bottom:2px solid #ddd;
-    padding-bottom:5px;
+h2 { border-bottom:2px solid #ddd; padding-bottom:5px; }
+
+input {
+  width:100%; padding:10px; margin-bottom:10px; border:1px solid #ccc;
 }
 
-input, select {
-    width:100%;
-    padding:10px;
-    margin-bottom:10px;
-    border:1px solid #ccc;
-}
-
-.btn {
-    background:#007BFF;
-    color:white;
-    padding:8px 12px;
-    border:none;
-    border-radius:5px;
-    cursor:pointer;
-    margin:3px;
+button {
+  padding:8px 12px; border:none; border-radius:5px;
+  background:#007BFF; color:white; cursor:pointer; margin:3px;
 }
 
 .btn-danger { background:#dc3545; }
-.btn-secondary { background:#6c757d; }
 
-.pub-item {
-    margin-bottom:15px;
-    padding-bottom:10px;
-    border-bottom:1px solid #eee;
-}
-
-.badge {
-    background:#007BFF;
-    color:white;
-    padding:2px 6px;
-    border-radius:4px;
-    font-size:12px;
-}
-
-.stats {
-    background:#eef3f8;
-    padding:10px;
-    margin-bottom:15px;
-}
-
-.search {
-    margin-bottom:15px;
+.item {
+  border-bottom:1px solid #eee;
+  margin-bottom:10px;
+  padding-bottom:10px;
 }
 </style>
-
 </head>
 
 <body>
@@ -99,32 +53,17 @@ input, select {
 
 <h2>Publications</h2>
 
-<div class="stats" id="stats"></div>
-
-<input id="search" class="search" placeholder="🔍 Search..." onkeyup="render()">
-
-<h3>Add / Edit Publication</h3>
-
 <input id="title" placeholder="Title (wajib)">
 <input id="authors" placeholder="Authors">
 <input id="year" placeholder="Year">
 <input id="journal" placeholder="Journal">
 <input id="link" placeholder="Link">
 
-<select id="category">
-<option>Scopus</option>
-<option>Nasional</option>
-<option>Buku</option>
-</select>
-
-<input id="cite" placeholder="Citation">
-
-<button class="btn" onclick="savePublication()">💾 Save</button>
-<button class="btn btn-secondary" onclick="downloadData()">📄 Download</button>
+<button onclick="save()">Save</button>
 
 <hr>
 
-<div id="pub-list"></div>
+<div id="list"></div>
 
 </div>
 
@@ -132,117 +71,81 @@ input, select {
 
 let editIndex = -1;
 
-function savePublication(){
-    let title = document.getElementById("title").value.trim();
-    if(!title){
-        alert("Title wajib diisi");
-        return;
-    }
+function save(){
+  let title = document.getElementById("title").value.trim();
+  if(!title){
+    alert("Title wajib diisi");
+    return;
+  }
 
-    let pub = {
-        title,
-        authors: document.getElementById("authors").value,
-        year: document.getElementById("year").value,
-        journal: document.getElementById("journal").value,
-        link: document.getElementById("link").value || "#",
-        category: document.getElementById("category").value,
-        cite: parseInt(document.getElementById("cite").value) || 0
-    };
+  let data = JSON.parse(localStorage.getItem("data") || "[]");
 
-    let data = JSON.parse(localStorage.getItem("pubs") || "[]");
+  let item = {
+    title: title,
+    authors: document.getElementById("authors").value,
+    year: document.getElementById("year").value,
+    journal: document.getElementById("journal").value,
+    link: document.getElementById("link").value
+  };
 
-    if(editIndex === -1){
-        data.push(pub);
-    } else {
-        data[editIndex] = pub;
-        editIndex = -1;
-    }
+  if(editIndex === -1){
+    data.push(item);
+  } else {
+    data[editIndex] = item;
+    editIndex = -1;
+  }
 
-    localStorage.setItem("pubs", JSON.stringify(data));
+  localStorage.setItem("data", JSON.stringify(data));
 
-    clearForm();
-    render();
+  clearForm();
+  show();
 }
 
-function render(){
-    let container = document.getElementById("pub-list");
-    container.innerHTML = "";
+function show(){
+  let data = JSON.parse(localStorage.getItem("data") || "[]");
+  let html = "";
 
-    let keyword = document.getElementById("search").value.toLowerCase();
-    let data = JSON.parse(localStorage.getItem("pubs") || "[]");
+  data.forEach((d,i)=>{
+    html += `
+      <div class="item">
+        <b>${d.title}</b><br>
+        ${d.authors} (${d.year})<br>
+        <i>${d.journal}</i><br>
+        <a href="${d.link}" target="_blank">${d.link}</a><br>
+        <button onclick="edit(${i})">Edit</button>
+        <button class="btn-danger" onclick="del(${i})">Delete</button>
+      </div>
+    `;
+  });
 
-    updateStats(data);
-
-    let filtered = data.map((item, i) => ({...item, idx:i}))
-                       .filter(p => p.title.toLowerCase().includes(keyword));
-
-    if(filtered.length === 0){
-        container.innerHTML = "<i>Tidak ada publikasi</i>";
-        return;
-    }
-
-    filtered.forEach(pub => {
-        let div = document.createElement("div");
-        div.className = "pub-item";
-
-        div.innerHTML = `
-            <b><a href="${pub.link}" target="_blank">${pub.title}</a></b>
-            <span class="badge">${pub.category}</span><br>
-            ${pub.authors} (${pub.year})<br>
-            <i>${pub.journal}</i><br>
-            📊 Citations: ${pub.cite}<br>
-            <button class="btn" onclick="editPub(${pub.idx})">✏️ Edit</button>
-            <button class="btn btn-danger" onclick="deletePub(${pub.idx})">🗑 Delete</button>
-        `;
-
-        container.appendChild(div);
-    });
+  document.getElementById("list").innerHTML = html;
 }
 
-function updateStats(data){
-    let total = data.length;
-    let cites = data.reduce((a,b)=>a+(b.cite||0),0);
+function edit(i){
+  let data = JSON.parse(localStorage.getItem("data") || "[]");
+  let d = data[i];
 
-    document.getElementById("stats").innerHTML =
-        "📄 Total Publications: <b>"+total+"</b> | 📊 Citations: <b>"+cites+"</b>";
+  document.getElementById("title").value = d.title;
+  document.getElementById("authors").value = d.authors;
+  document.getElementById("year").value = d.year;
+  document.getElementById("journal").value = d.journal;
+  document.getElementById("link").value = d.link;
+
+  editIndex = i;
 }
 
-function editPub(i){
-    let data = JSON.parse(localStorage.getItem("pubs") || "[]");
-    let p = data[i];
-
-    document.getElementById("title").value = p.title;
-    document.getElementById("authors").value = p.authors;
-    document.getElementById("year").value = p.year;
-    document.getElementById("journal").value = p.journal;
-    document.getElementById("link").value = p.link;
-    document.getElementById("category").value = p.category;
-    document.getElementById("cite").value = p.cite;
-
-    editIndex = i;
-}
-
-function deletePub(i){
-    let data = JSON.parse(localStorage.getItem("pubs") || "[]");
-    data.splice(i,1);
-    localStorage.setItem("pubs", JSON.stringify(data));
-    render();
+function del(i){
+  let data = JSON.parse(localStorage.getItem("data") || "[]");
+  data.splice(i,1);
+  localStorage.setItem("data", JSON.stringify(data));
+  show();
 }
 
 function clearForm(){
-    document.querySelectorAll("input").forEach(e=>e.value="");
+  document.querySelectorAll("input").forEach(e => e.value = "");
 }
 
-function downloadData(){
-    let data = localStorage.getItem("pubs");
-    let blob = new Blob([data], {type:"text/plain"});
-    let a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "publications.txt";
-    a.click();
-}
-
-window.onload = render;
+window.onload = show;
 
 </script>
 
